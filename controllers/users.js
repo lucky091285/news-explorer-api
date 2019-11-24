@@ -2,8 +2,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
-const ReqError = require('../errors/req-err');
 const AuthError = require('../errors/auth-err');
+
+const { NOT_AUTORIZED } = require('../errors/text-errors');
+
+const { DEV_SECRET_KEY } = require('./../config');
+
+const { NODE_ENV, SECRET_KEY } = process.env;
+require('dotenv').config();
 
 // eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res, next) => {
@@ -18,12 +24,9 @@ module.exports.createUser = (req, res, next) => {
       .then((hash) => User.create({
         name, email, password: hash,
       }))
-      .then((user) => {
-        if (!user) {
-          throw new ReqError('Ошибка запроса');
-        }
-        res.send({ data: user });
-      })
+      .then((user) => res.status(201).send({
+        _id: user._id, name: user.name, email: user.email,
+      }))
       .catch(next);
   } else {
     return 'Заполните пожалуйста все поля';
@@ -35,10 +38,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new AuthError('Ошибка авторизации');
-      }
-      const token = jwt.sign({ _id: user._id }, process.env.NODE_ENV === 'production' ? process.env.SECRET_KEY : 'secret_key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? SECRET_KEY : DEV_SECRET_KEY, { expiresIn: '7d' });
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
@@ -48,16 +48,16 @@ module.exports.login = (req, res, next) => {
         .send({ message: 'авторизация прошла успешно' })
         .end();
     })
-    .catch(next);
+    .catch((err) => next(new AuthError(err.message)));
 };
 
 module.exports.getSingleUser = (req, res, next) => {
-  User.findById(req.params.id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(NOT_AUTORIZED);
       }
-      res.send({ data: user });
+      res.send({ user: user.name, email: user.email });
     })
     .catch(next);
 };

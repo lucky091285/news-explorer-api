@@ -13,6 +13,8 @@ const articlesRoutes = require('./routes/articles');
 
 const { PORT = 3000 } = process.env;
 
+const { MONGO_SERVER } = require('./config');
+
 const app = express();
 
 const limiter = rateLimit({
@@ -20,7 +22,7 @@ const limiter = rateLimit({
   max: 100,
 });
 
-mongoose.connect('mongodb://localhost:27017/new_site', {
+mongoose.connect(MONGO_SERVER, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -74,7 +76,5 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
-
-app.get('*', (req, res) => res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }));
 
 app.listen(PORT);
