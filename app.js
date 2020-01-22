@@ -3,6 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -16,6 +17,11 @@ const { PORT = 3000 } = process.env;
 const { MONGO_SERVER } = require('./config');
 
 const app = express();
+app.set('trust proxy', 1);
+app.use(cors(({
+  credentials: true,
+  origin: true,
+})));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
