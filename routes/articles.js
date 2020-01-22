@@ -1,6 +1,6 @@
 const articlesRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { createArticle, getAllArticles, deleteArticle } = require('../controllers/article');
+const { createArticle, getAllArticles, deleteArticle } = require('../controllers/articles');
 
 articlesRouter.get('/', getAllArticles);
 
@@ -16,9 +16,9 @@ articlesRouter.post('/', celebrate({
   }),
 }), createArticle);
 
-articlesRouter.delete(':/articleId', celebrate({
+articlesRouter.delete('/:id', celebrate({
   params: Joi.object().keys({
-    articleId: Joi.string().alphanum(),
+    id: Joi.string().alphanum(),
   }),
 }), deleteArticle);
 
