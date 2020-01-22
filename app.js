@@ -17,7 +17,6 @@ const { PORT = 3000 } = process.env;
 const { MONGO_SERVER } = require('./config');
 
 const app = express();
-app.set('trust proxy', 1);
 app.use(cors(({
   credentials: true,
   origin: true,
