@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -50,6 +51,14 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => next(new AuthError(err.message)));
 };
+
+module.exports.logout = (req, res, next) => res
+  .status(201)
+  .cookie('jwt', '', {
+    maxAge: 0,
+    httpOnly: true,
+    sameSite: false,
+  }).send({ login: false });
 
 module.exports.getSingleUser = (req, res, next) => {
   User.findById(req.user._id)
