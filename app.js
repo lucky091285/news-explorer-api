@@ -17,10 +17,7 @@ const { PORT = 3000 } = process.env;
 const { MONGO_SERVER } = require('./config');
 
 const app = express();
-app.use(cors(({
-  credentials: true,
-  origin: true,
-})));
+app.use(cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
