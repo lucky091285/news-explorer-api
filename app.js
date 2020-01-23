@@ -66,8 +66,10 @@ app.post('/signin', celebrate({
 
 app.post('/logout', logout);
 
-app.use('/users', auth, usersRoutes);
-app.use('/articles', auth, articlesRoutes);
+app.use(auth);
+
+app.use('/users', usersRoutes);
+app.use('/articles', articlesRoutes);
 
 app.use(errorLogger);
 
