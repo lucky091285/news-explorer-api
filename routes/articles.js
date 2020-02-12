@@ -2,8 +2,6 @@ const articlesRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { createArticle, getAllArticles, deleteArticle } = require('../controllers/articles');
 
-articlesRouter.get('/', getAllArticles);
-
 articlesRouter.post('/', celebrate({
   body: Joi.object().keys({
     keyword: Joi.string().required().min(2),
@@ -15,6 +13,8 @@ articlesRouter.post('/', celebrate({
     image: Joi.string().required().uri(),
   }),
 }), createArticle);
+
+articlesRouter.get('/', getAllArticles);
 
 articlesRouter.delete('/:id', celebrate({
   params: Joi.object().keys({
