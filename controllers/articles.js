@@ -23,15 +23,10 @@ module.exports.createArticle = (req, res, next) => {
 };
 
 module.exports.getAllArticles = (req, res, next) => {
-  Article.find({})
+  Article.find({ owner: req.user._id })
     .populate('owner')
-    .then((article) => {
-      if (!article) {
-        throw new ServerError(SERVER_ERROR);
-      }
-      res.send({ data: article });
-    })
-    .catch(next);
+    .then((articles) => res.send(articles))
+    .catch(() => next(new ServerError('Ошибка при чтении всех статей')));
 };
 
 module.exports.deleteArticle = (req, res, next) => {
