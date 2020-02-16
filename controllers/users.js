@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const AuthError = require('../errors/auth-err');
+const ReqError = require('../errors/req-err');
 
-const { NOT_AUTORIZED } = require('../errors/text-errors');
+const { NOT_AUTORIZED, REQ_ERROR } = require('../errors/text-errors');
 
 const { DEV_SECRET_KEY } = require('./../config');
 
@@ -28,7 +29,11 @@ module.exports.createUser = (req, res, next) => {
       .then((user) => res.status(201).send({
         _id: user._id, name: user.name, email: user.email,
       }))
-      .catch(next);
+      .catch(() => {
+        const err = new ReqError(REQ_ERROR);
+        err.statusCode = 400;
+        next(err);
+      });
   } else {
     return 'Заполните пожалуйста все поля';
   }
