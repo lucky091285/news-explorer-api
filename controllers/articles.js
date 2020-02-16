@@ -8,18 +8,13 @@ module.exports.createArticle = (req, res, next) => {
   const {
     keyword, title, text, date, source, link, image,
   } = req.body;
-  const owner = (req.user);
+  const owner = req.user._id;
 
   Article.create({
     keyword, title, text, date, source, link, image, owner,
   })
-    .then((article) => {
-      if (!article) {
-        throw new ServerError(SERVER_ERROR);
-      }
-      res.send({ data: article });
-    })
-    .catch(next);
+    .then((article) => res.send(article))
+    .catch((err) => next(new ServerError(`Ошибка при создании статьи -- ${err.message}`)));
 };
 
 module.exports.getAllArticles = (req, res, next) => {
@@ -35,7 +30,7 @@ module.exports.deleteArticle = (req, res, next) => {
     .then((article) => {
       if (article === null) throw new NotFoundError(NOT_FOUND_ERROR_ARTICLE);
       if (!(JSON.stringify(article.owner) === JSON.stringify(req.user._id))) {
-        const notArticleOwner = new Error(NOT_FOUND_ERROR_ARTICLE);
+        const notArticleOwner = new ServerError(NOT_FOUND_ERROR_ARTICLE);
         notArticleOwner.statusCode = 403;
         throw notArticleOwner;
       }
