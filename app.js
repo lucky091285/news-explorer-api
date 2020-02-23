@@ -12,9 +12,10 @@ const auth = require('./middlewares/auth');
 const { createUser, login, logout } = require('./controllers/users');
 const articlesRoutes = require('./routes/articles');
 
-const { PORT = 3000 } = process.env;
-
-const { MONGO_SERVER } = require('./config');
+const {
+  PORT = 3000,
+  MONGO_SERVER = 'mongodb://localhost:27017/new_site',
+} = process.env;
 
 const app = express();
 app.use(cors(({
